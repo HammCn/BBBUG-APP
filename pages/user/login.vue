@@ -11,6 +11,7 @@
 					<view class="weui-cell__bd">
 						<input class="weui-input" placeholder="你的登录邮箱" type="email" v-model="user_account" />
 					</view>
+					<view class="weui-cell__ft" @click="sendEmail"><i class="iconfont icon-mail" style="font-size:28px;"></i></view>
 				</view>
 				<view class="weui-cell weui-cell_input">
 					<view class="weui-cell__hd">
@@ -59,7 +60,25 @@
 					}
 
 				});
-			}
+			},
+			sendEmail() {
+				let that = this;
+				that.app.request({
+					url: "sms/email",
+					loading: "发送中",
+					data: {
+						email: that.user_account,
+					},
+					success: function(res) {
+						uni.showModal({
+							title: "发送成功",
+							content: res.msg,
+							showCancel: false
+						});
+					}
+
+				});
+			},
 		}
 	}
 </script>
@@ -68,6 +87,7 @@
 	@import "/static/style/weui.scss";
 	@import "/static/style/main.scss";
 	@import '/static/style/font/iconfont.scss';
+
 	.title {
 		font-size: 32px;
 		text-align: center;

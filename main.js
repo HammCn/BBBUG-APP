@@ -128,12 +128,12 @@ app.request = function(_data) {
 						}
 				}
 			} catch (e) {
-				console.log(e);
 				_data.loading && uni.hideLoading();
 				//解析可能发生的异常
 				if (_data.fail) {
 					_data.fail(e);
 				} else {
+					console.log(e);
 					uni.showModal({
 						title: '数据处理失败',
 						content: '解析服务器数据失败，请稍候再试！',

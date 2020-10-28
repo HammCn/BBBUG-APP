@@ -33,12 +33,12 @@
 			<view class="weui-panel__bd">
 				<view class="weui-media-box weui-media-box_appmsg" v-for="(item,index) in songList" @click="showMenu(item)">
 					<view class="weui-media-box__hd">
-						<img class="weui-media-box__thumb" :src="item.pic" alt="">
+						<img class="weui-media-box__thumb song_image" :src="item.pic" alt="">
 					</view>
 					<view class="weui-media-box__bd">
 						<view class="weui-media-box__title">{{item.name}}</view>
 						<view class="weui-media-box__desc">
-							歌手：{{item.singer}}
+							歌手：{{item.singer}}<br>.
 						</view>
 					</view>
 				</view>
@@ -111,17 +111,8 @@
 									},
 									loading: that.at ? "送歌中" : "点歌中",
 									success: function(res) {
-										uni.showModal({
-											title: that.at ? '送歌成功' : '点歌成功',
-											content: res.msg,
-											showCancel: true,
-											cancelText: that.at ? '继续送歌' : '继续点歌',
-											confirmText: '返回房间',
-											success: function(res) {
-												if (res.confirm) {
-													uni.navigateBack();
-												}
-											}
+										uni.showToast({
+											title: that.at ? '送歌成功' : '点歌成功'
 										});
 									}
 								});
@@ -139,6 +130,7 @@
 	@import "/static/style/weui.scss";
 	@import "/static/style/main.scss";
 	@import '/static/style/font/iconfont.scss';
+
 	.searchbox {
 		margin: 0px;
 		background-color: white;
@@ -174,5 +166,8 @@
 		font-size: 14px;
 		color: #999;
 		text-align: center;
+	}
+	.song_image{
+		border-radius: 10px;
 	}
 </style>

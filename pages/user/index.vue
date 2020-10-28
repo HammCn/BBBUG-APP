@@ -86,6 +86,11 @@
 			that.getMyInfo();
 		},
 		methods: {
+			doCreateRoom() {
+				uni.navigateTo({
+					url: "../room/create"
+				});
+			},
 			doJoinMyRoom() {
 				let that = this;
 				uni.showModal({
@@ -144,6 +149,7 @@
 					success() {
 						that.userInfo = null;
 						uni.$emit('IndexReload');
+						uni.navigateBack();
 					}
 				});
 			}
@@ -155,6 +161,7 @@
 	@import "/static/style/weui.scss";
 	@import "/static/style/main.scss";
 	@import '/static/style/font/iconfont.scss';
+
 	button {
 		background-color: transparent;
 		border: none;

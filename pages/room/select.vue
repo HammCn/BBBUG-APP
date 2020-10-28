@@ -31,6 +31,7 @@
 				isEntering: false,
 				app: getApp(),
 				roomList: [],
+				userInfo: false,
 				topHeight: 0,
 				typeList: [{
 					value: 0,
@@ -53,10 +54,42 @@
 		},
 		onShow() {
 			let that = this;
-			that.getHotRooms();
+			that.app.user.getMyInfo({
+				success: function(userInfo) {
+					that.userInfo = userInfo;
+					that.getHotRooms();
+				}
+			});
 		},
 		onPullDownRefresh() {
 			this.getHotRooms();
+		},
+		onNavigationBarButtonTap(res) {
+			let that = this;
+			switch (res.text) {
+				case '创建':
+					if (that.userInfo && that.userInfo.myRoom) {
+						uni.showModal({
+							title: "已有房间",
+							content: "你已经创建了'" + that.userInfo.myRoom.room_name + "',是否进入该房间?",
+							confirmText: "进入房间",
+							success(res) {
+								if (res.confirm) {
+									uni.showLoading({
+										title: '连接房间中'
+									});
+									that.doLoopToEnter(that.userInfo.myRoom);
+								}
+							}
+						});
+					} else {
+						uni.navigateTo({
+							url: "../room/create"
+						});
+					}
+					break;
+				default:
+			}
 		},
 		methods: {
 			getHotRooms() {
@@ -69,7 +102,6 @@
 						uni.stopPullDownRefresh();
 						that.loading = false;
 						that.roomList = res.data;
-						console.log('房间列表加载完了');
 					}
 				});
 			},
@@ -93,7 +125,6 @@
 			},
 			doLoopToEnter(room) {
 				let that = this;
-				console.log(that.app.webSocket.isConnected)
 				if (that.app.webSocket.isConnected) {
 					if (!that.isEntering) {
 						that.app.webSocket.closeWss();
@@ -116,6 +147,7 @@
 	@import "/static/style/weui.scss";
 	@import "/static/style/main.scss";
 	@import '/static/style/font/iconfont.scss';
+
 	.roomBg {
 		background-color: white;
 		padding: 10px;

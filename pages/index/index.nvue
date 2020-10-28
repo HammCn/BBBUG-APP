@@ -1,4 +1,11 @@
 <style>
+	.uniapp{
+		position: fixed;
+		left: 0;
+		right: 0;
+		top: 0;
+		bottom: 0;
+	}
 	.chatInput {
 		position: fixed;
 		left: 0;
@@ -7,7 +14,8 @@
 		height: 50px;
 		background-color: #FFFFFF;
 		font-size: 16px;
-		padding: 5px 10px;
+		padding: 5px 10px; 
+		padding-left: 50px;
 	}
 
 	.historyList {
@@ -16,11 +24,13 @@
 		right: 0;
 		bottom: 0;
 		top: 0;
-		padding-bottom: 20px;
+		background-color: #F5F5F5;
 	}
 	.item_system{
 		text-align: center;
 		margin-top: 20px;
+		margin-left: 20px;
+		margin-right: 20px;
 	}
 	.item_system_text{
 		font-size: 12px;
@@ -80,7 +90,7 @@
 	.chat_item_text{
 		margin-top: 10px;
 		border-radius: 10px;
-		background-color: #E5E5E5;
+		background-color: #FFFFFF;
 		color: #333;
 		padding: 10px;
 		font-size: 16px;
@@ -101,12 +111,9 @@
 		top: 10px;
 		z-index:100;
 		flex-direction: row;
-		background-color: white;
+		background-color: rgba(0,0,0,0.6);
 		border-radius: 10px;
 		padding: 5px;
-		border-color: #ccc;
-		border-width: 1px;
-		border-style:dotted;
 	}
 	.player_image{
 		width: 40px;
@@ -114,11 +121,12 @@
 		border-radius: 10px;
 	}
 	.player_info{
+		padding:5px;
 		padding-right: 10px;
 	}
 	.player_song{
 		font-size: 14px;
-		color:#333;
+		color:#FFFFFF;
 	}
 	.player_user{
 		font-size: 12px;
@@ -131,20 +139,27 @@
 		position: fixed;
 		right: 10px;
 		bottom: 10px;
+		width: 36px;
+		height: 36px;
+	}
+	.chatMenu_emoji{
+		position: fixed;
+		left: 10px;
+		bottom: 10px;
 		width: 32px;
 		height: 32px;
 	}
-	
-	.menuBody {
+	.menuBody{
+		flex-direction: row;
+	}
+	.menuBox {
 		z-index: 10;
 		position: fixed;
-		left: 0;
+		left: 10px;
 		bottom: 0;
-		right: 0;
-		background-color: #EEEEEE;
-		border-top-color: #e5e5e5;
-		border-top-width: 1px;
-		border-style: solid;
+		right: 10px;
+		background-color: rgba(0,0,0,0.6);
+		border-radius: 10px;
 		flex-direction: row;
 		padding: 10px;
 	}
@@ -169,17 +184,37 @@
 		text-align: center;
 		font-size: 12px;
 		padding: 10px;
+		color: #FFFFFF;
 	}
 	.menuImage{
 		width: 24px;
 		height: 24px;
+	}
+	.emoji{
+		position: fixed;
+		left: 10px;
+		right: 10px;
+		bottom: 0;
+		background-color: rgba(0,0,0,0.6);
+		flex-direction: row;
+		border-radius: 10px;
+		padding: 10px 0px;
+		z-index:100;
+		flex-wrap:wrap;
+		justify-content: center;
+		align-items: center;
+	}
+	.emoji_item{
+		width: 40px;
+		height: 40px;
+		margin: 10px;
 	}
 </style>
 <template>
 	<view class="uniapp">
 		<block v-if="showRoomPage">
 			<scroll-view @click="historyClicked" class="historyList" id="historyList" scroll-y="true" :scroll-with-animation="true"
-			 :scroll-into-view="viewId" :style="{bottom:historyListBottom+'px'}">
+			 :scroll-into-view="viewId" :style="{bottom:safeAreaBottom+'px',paddingBottom:(safeAreaBottom+50)+'px'}">
 				<view id="historyBox">
 					<view v-for="(item,index) in historyList">
 						<view class="item" :id="'sha_'+item.sha" v-if="item.type=='text' && item.user.user_id!=userInfo.user_id">
@@ -207,16 +242,14 @@
 							<view class="chat_item_body_right">
 								<view v-if="!item.at" class="chat_item_text_box">
 									<text class="chat_item_text" v-if="item.user.user_id==userInfo.user_id && userInfo.user_sex==1" style="background-color: #66CBFF;color:black;">{{urldecode(item.content)}}</text>
-									<text class="chat_item_text" v-if="item.user.user_id==userInfo.user_id && userInfo.user_sex==0" style="background-color: #FE9898;color:white;">{{urldecode(item.content)}}</text>
-									<text class="chat_item_text" v-if="item.user.user_id!=userInfo.user_id">{{urldecode(item.content)}}</text>
+									<text class="chat_item_text" v-if="item.user.user_id==userInfo.user_id && userInfo.user_sex!=1" style="background-color: #FE9898;color:white;">{{urldecode(item.content)}}</text>
 								</view>
 								<view v-if="item.at" class="chat_item_text_box">
 									<text class="chat_item_text" v-if="item.at.user_id==userInfo.user_id" style="background-color: #666;color:white;">{{urldecode(item.content)}}</text>
 									<text class="chat_item_text" v-if="item.at.user_id!=userInfo.user_id&&item.user.user_id==userInfo.user_id && userInfo.user_sex==1"
 									 style="background-color: #66CBFF;color:black;">{{urldecode(item.content)}}</text>
-									<text class="chat_item_text" v-if="item.at.user_id!=userInfo.user_id&&item.user.user_id==userInfo.user_id && userInfo.user_sex==0"
+									<text class="chat_item_text" v-if="item.at.user_id!=userInfo.user_id&&item.user.user_id==userInfo.user_id && userInfo.user_sex!=1"
 									 style="background-color: #FE9898;color:white;">{{urldecode(item.content)}}</text>
-									<text class="chat_item_text" v-if="item.at.user_id!=userInfo.user_id&&item.user.user_id!=userInfo.user_id">{{urldecode(item.content)}}</text>
 								</view>
 							</view>
 						</view>
@@ -249,21 +282,29 @@
 				</view>
 				<view :id="'im_'+historyList.length" class="bottom"></view>
 			</scroll-view>
-			<input class="chatInput" type="text" placeholder="全员禁言中,你暂时无法发言" v-if="chatType=='text' && room.room_sendmsg==1"
+			<view class="emoji" :style="{bottom:(safeAreaBottom+60)+'px'}" blurEffect="light" v-if="showEmojiBox">
+				<image class="emoji_item" v-for="index in 30" :src="'../../static/Emojis/'+index+'.png'" @click="sendEmoji(index)"></image>
+			</view>
+			<input class="chatInput" :style="{bottom:safeAreaBottom+'px'}" type="text" placeholder="全员禁言中,你暂时无法发言" v-if="chatType=='text' && room.room_sendmsg==1"
 			 disabled="true" />
-			<input disabled="disabled" v-if="chatType=='voice'" class="chatInput" type="text" placeholder="点击这里开始录音">
-			<input class="chatInput" type="text" confirm-type="send" confirm-hold="true" placeholder="说点什么吧..." v-model="messageObj.message"
-			 v-if="chatType=='text' && room.room_sendmsg==0" @keydown="doKeyDown" :focus="messageObj.focus" @confirm="doSendMessage" />
-			<image @click="doShowMenuBox" class="chatMenu_image" src="/static/image/app.png" mode="widthFix"></image>
+			<input disabled="disabled" :style="{bottom:safeAreaBottom+'px'}" v-if="chatType=='voice'" class="chatInput" type="text"
+			 placeholder="点击这里开始录音">
+			<input class="chatInput" :style="{bottom:safeAreaBottom+'px'}" type="text" confirm-type="send" confirm-hold="true"
+			 placeholder="说点什么吧..." v-model="messageObj.message" v-if="chatType=='text' && room.room_sendmsg==0" @keydown="doKeyDown"
+			 :focus="messageObj.focus" @confirm="doSendMessage" />
+			<image :style="{bottom:(safeAreaBottom+10)+'px'}" @click="doShowMenuBox" class="chatMenu_image" src="/static/image/more.png"
+			 mode="widthFix"></image>
+			<image :style="{bottom:(safeAreaBottom+10)+'px'}" @click="doShowEmojiBox" class="chatMenu_emoji" src="/static/image/emoji.png"
+			 mode="widthFix"></image>
 
-			<view class="player" v-if="song.song" @click="doMusicClicked">
+			<view class="player" v-if="song.song" @click="doMusicClicked" blurEffect="dark">
 				<view class="player_info">
-					<text class="player_song">{{song.song.name}} - {{song.song.singer}}</text>
-					<text class="player_user">{{urldecode(song.user.user_name)}}</text>
+					<text class="player_song">{{song.song.name}}</text>
+					<text class="player_user">点歌人: {{urldecode(song.user.user_name)}}</text>
 				</view>
 				<image class="player_image" :src="song.song.pic"></image>
 			</view>
-			<view class="menuBox" v-if="showMenuBox">
+			<view v-if="showMenuBox" :style="{bottom:(safeAreaBottom+60)+'px'}" blurEffect="light" class="menuBox">
 				<scroll-view show-scrollbar="false" scroll-with-animation="true" scroll-x="true" class="menuBody">
 					<view class="menuItem" @click="chooseImage">
 						<view class="menuMain">
@@ -325,14 +366,10 @@
 	export default {
 		data() {
 			return {
-				// 聊天页面时时滚动样式
 				viewId: "",
-				historyListBottom: 60,
+				safeAreaBottom: 0,
 				bgAudioMannager: null,
-				config: {
-					lockScreen: false,
-				},
-				loading: false,
+				showEmojiBox: false,
 				showRoomPage: false,
 				showMenuBox: false,
 				showPasswordForm: false,
@@ -345,25 +382,20 @@
 				room_id: 0,
 				room: false,
 				password: "",
-				rotate: 0,
-				playerTimer: null,
 				chatType: 'text',
-				historyKey: 'historyList_',
 				historyList: [],
 				messageObj: {
 					message: "",
 					at: false,
 					focus: false,
 				},
-				//双击
-				lastTapTimeoutFunc: null,
-				touchStartTime: 0,
-				touchEndTime: 0,
-				lastTapTime: 0,
+				musicNotLike: false
 			}
 		},
 		onLoad() {
 			let that = this;
+			const res = uni.getSystemInfoSync();
+			that.safeAreaBottom = res.safeAreaInsets.bottom == 0 ? 10 : res.safeAreaInsets.bottom;
 			that.bgAudioMannager = uni.getBackgroundAudioManager();
 			this.room_id = uni.getStorageSync('room_id') || 10000;
 			that.app.user.getMyInfo({
@@ -403,7 +435,6 @@
 				uni.setStorageSync('room_id', parseInt(that.room_id));
 				that.getRoomInfo();
 			});
-			uni.onKeyboardHeightChange(function(e) {});
 			that.bgAudioMannager.onCanplay(function() {
 				let time = parseInt(new Date().valueOf() / 1000) - that.song.since - 3;
 				that.bgAudioMannager.seek(time > 0 ? time : 0);
@@ -415,6 +446,16 @@
 				};
 			});
 		},
+		onShow() {
+			let that = this;
+			if (that.bgAudioMannager.src) {
+				if (!that.musicNotLike) {
+					that.bgAudioMannager.play();
+				}
+			}
+			that.password = '';
+			that.autoScroll();
+		},
 		onNavigationBarButtonTap(res) {
 			let that = this;
 			switch (res.text) {
@@ -424,7 +465,7 @@
 					});
 					break;
 				case '我的':
-					if (that.userInfo.user_id <= 0) {
+					if (that.userInfo && that.userInfo.user_id <= 0) {
 						that.app.user.login();
 					} else {
 						uni.navigateTo({
@@ -439,31 +480,24 @@
 			doUserHeadEvent: function(e) {
 				var that = this
 				that.showMenuUserHead(e);
-				return;
-				// 控制点击事件在350ms内触发，加这层判断是为了防止长按时会触发点击事件
-				if (that.touchEndTime - that.touchStartTime < 350) {
-					// 当前点击的时间
-					var currentTime = e.timeStamp
-					var lastTapTime = that.lastTapTime
-					// 更新最后一次点击时间
-					that.lastTapTime = currentTime
-
-					// 如果两次点击时间在300毫秒内，则认为是双击事件
-					if (currentTime - lastTapTime < 300) {
-						// 成功触发双击事件时，取消单击事件的执行
-						clearTimeout(that.lastTapTimeoutFunc);
-						that.doTouch(e.user);
-						return;
-					}
+			},
+			doShowEmojiBox() {
+				let that = this;
+				that.showEmojiBox = !that.showEmojiBox;
+				that.showMenuBox = false;
+				uni.hideKeyboard();
+				if (!that.showEmojiBox) {
+					that.autoScroll();
 				}
-				that.showMenuUserHead(e);
 			},
 			doShowMenuBox() {
 				let that = this;
-				that.showMenuBox = true;
-				that.historyListBottom = 140;
+				that.showMenuBox = !that.showMenuBox;
+				that.showEmojiBox = false;
 				uni.hideKeyboard();
-				that.autoScroll();
+				if (!that.showMenuBox) {
+					that.autoScroll();
+				}
 			},
 			doKeyDown() {
 				let that = this;
@@ -477,11 +511,11 @@
 			doMusicClicked() {
 				let that = this;
 				let menu = [
-					'不喜欢'
+					'不喜欢', '收藏'
 				];
 				if (that.userInfo.user_admin || that.room.room_user == that.userInfo.user_id) {
 					menu = [
-						'切歌'
+						'切歌', '收藏', '禁止Ta点歌'
 					];
 				}
 				uni.showActionSheet({
@@ -490,6 +524,24 @@
 						console.log(res.tapIndex);
 						let buttonName = menu[res.tapIndex];
 						switch (buttonName) {
+							case '禁止Ta点歌':
+								that.app.request({
+									url: 'user/songdown',
+									data: {
+										room_id: that.room_id,
+										user_id: that.song.user.user_id
+									},
+									loading: "禁歌中",
+									success: function(res) {
+										uni.showModal({
+											title: '禁歌成功',
+											content: res.msg,
+											showCancel: false,
+											success: function() {}
+										});
+									}
+								});
+								break;
 							case '切歌':
 								uni.showModal({
 									title: '切歌提醒',
@@ -524,12 +576,27 @@
 											song: null,
 											user: null
 										};
+										that.musicNotLike = true;
 										uni.showModal({
 											title: '不喜欢',
 											content: res.msg,
 											showCancel: false,
 											success: function() {}
-										})
+										});
+									}
+								});
+								break;
+							case '收藏':
+								that.app.request({
+									url: "song/addMySong",
+									data: {
+										room_id: that.room_id,
+										mid: that.song.song.mid
+									},
+									success: function(res) {
+										uni.showToast({
+											title: "收藏成功"
+										});
 									}
 								});
 								break;
@@ -540,9 +607,6 @@
 			},
 			doAtUser(user) {
 				let that = this;
-				uni.showToast({
-					title: "at"
-				});
 				that.messageObj.at = user;
 				that.messageObj.message = "@" + decodeURIComponent(user.user_name) + " " + that.messageObj.message;
 				that.messageObj.focus = true;
@@ -558,17 +622,12 @@
 			historyClicked() {
 				let that = this;
 				that.showMenuBox = false;
-				that.historyListBottom = 60;
+				that.showEmojiBox = false;
 				uni.hideKeyboard();
 				that.autoScroll();
 			},
-			saveMessageHistory() {
-				let that = this;
-				uni.setStorageSync(that.historyKey + that.room_id, JSON.stringify(that.historyList));
-			},
 			messageController(msg) {
 				let that = this;
-				console.log(msg);
 				switch (msg.type) {
 					case 'text':
 					case 'img':
@@ -585,38 +644,38 @@
 						} else {
 							that.addSystemMessage(decodeURIComponent(msg.user.user_name) + " 点了一首《" + msg.song.name + "》", '#333');
 						}
-						that.saveMessageHistory();
+
 						break;
 					case 'pass':
 						that.addSystemMessage(decodeURIComponent(msg.user.user_name) + " 切掉了《" + msg.song.name + "》", '#ff4500');
-						that.saveMessageHistory();
+
 						break;
 					case 'chat_bg':
 						that.addSystemMessage(decodeURIComponent(msg.user.user_name) + " 运气大爆发,触发了点歌背景墙特效(1小时内播放歌曲时有效)!", 'green', '#eee');
-						that.saveMessageHistory();
+
 						break;
 					case 'push':
 						that.addSystemMessage(decodeURIComponent(msg.user.user_name) + " 将歌曲 《" + msg.song.name + "》 设为置顶候播放");
-						that.saveMessageHistory();
+
 						break;
 					case 'removeSong':
 						that.addSystemMessage(decodeURIComponent(msg.user.user_name) + " 将歌曲 《" + msg.song.name + "》 从队列移除");
-						that.saveMessageHistory();
+
 						break;
 					case 'removeban':
 						that.addSystemMessage(decodeURIComponent(msg.user.user_name) + " 将 " + decodeURIComponent(msg.ban.user_name) +
 							" 解禁");
-						that.saveMessageHistory();
+
 						break;
 					case 'shutdown':
 						that.addSystemMessage(decodeURIComponent(msg.user.user_name) + " 禁止了用户 " + decodeURIComponent(msg.ban.user_name) +
 							" 发言");
-						that.saveMessageHistory();
+
 						break;
 					case 'songdown':
 						that.addSystemMessage(decodeURIComponent(msg.user.user_name) + " 禁止了用户 " + decodeURIComponent(msg.ban.user_name) +
 							" 点歌");
-						that.saveMessageHistory();
+
 						break;
 					case 'back':
 						for (let i = 0; i < that.historyList.length; i++) {
@@ -626,9 +685,10 @@
 							}
 						}
 						that.addSystemMessage(decodeURIComponent(msg.user.user_name) + " 撤回了一条消息");
-						that.saveMessageHistory();
+
 						break;
 					case 'playSong':
+						that.musicNotLike = false;
 						that.playMusic(msg);
 						break;
 					default:
@@ -639,14 +699,29 @@
 				if (that.song.song && that.song.song.mid == msg.song.mid) {
 					return;
 				}
-				console.log('Play Music');
 				that.song = msg;
 				that.bgAudioMannager.title = msg.song.name + " - " + msg.song.singer;
 				that.bgAudioMannager.singer = "点歌人:" + decodeURIComponent(msg.user.user_name) + ' (' + that.room.room_name + ')';
 				that.bgAudioMannager.coverImgUrl = msg.song.pic;
 				that.bgAudioMannager.src = "https://api.bbbug.com/api/song/playurl?mid=" + msg.song.mid;
 				that.bgAudioMannager.play();
-				that.addSystemMessage('正在播放 ' + msg.song.name + '(' + msg.song.singer + ')');
+			},
+			sendEmoji(index) {
+				let that = this;
+				let url = "https://cdn.bbbug.com/images/emoji/" + index + ".png";
+				that.app.request({
+					url: "message/send",
+					data: {
+						where: 'channel',
+						to: that.room_id,
+						type: 'img',
+						msg: url,
+						resource: url,
+					},
+					success(res) {
+						that.showEmojiBox = false;
+					}
+				});
 			},
 			doSendMessage(e) {
 				let that = this;
@@ -697,25 +772,24 @@
 					that.historyList.shift();
 				}
 				that.historyList.push(msg);
-				that.saveMessageHistory();
+
 				that.autoScroll();
 			},
 			urldecode(str) {
 				return decodeURIComponent(str);
 			},
-			connect() {
+			connectWebsocket() {
 				let that = this;
 				if (that.app.webSocket.isConnected) {
 					console.log("需要斷開")
 					that.app.webSocket.closeWss();
-					setTimeout(function(){
-						that.connect();
-					},1000);
+					setTimeout(function() {
+						that.connectWebsocket();
+					}, 1000);
+					return;
 				}
 				that.app.webSocket.connectWss();
 				uni.hideLoading();
-				// let str = uni.getStorageSync(that.historyKey + that.room_id) || false;
-				// that.historyList = str ? JSON.parse(str) : [];
 				that.addSystemMessage(that.room.room_notice || '服务器连接成功');
 				that.showPasswordForm = false;
 				that.showRoomPage = true;
@@ -743,6 +817,7 @@
 							_obj.time = res.data[i].message_createtime;
 							that.historyList.unshift(_obj);
 						}
+						that.addSystemMessage(that.room.room_notice || "欢迎来到" + that.room.room_name);
 						that.autoScroll();
 					},
 
@@ -765,9 +840,9 @@
 					},
 					success(res) {
 						that.room = res.data;
-						// uni.setNavigationBarTitle({
-						// 	title: that.room.room_name
-						// });
+						uni.setNavigationBarTitle({
+							title: that.room.room_name
+						});
 						that.app.request({
 							url: 'room/getWebsocketUrl',
 							data: {
@@ -777,9 +852,7 @@
 								that.app.webSocket.config.wssUrl = 'wss://websocket.bbbug.com/?account=' +
 									res.data.account + '&channel=' +
 									res.data.channel + '&ticket=' + res.data.ticket;
-								
-								that.connect();
-
+								that.connectWebsocket();
 							},
 
 							error: function(res) {
@@ -857,7 +930,6 @@
 				}
 			},
 			showMenuUserHead(msg) {
-				console.log(msg);
 				let user = msg.user;
 				let that = this;
 				let menu = ['进入主页', '@一下Ta', '送歌给Ta'];
@@ -894,9 +966,7 @@
 											title: '解禁成功',
 											content: res.msg,
 											showCancel: false,
-											success: function() {
-												that.getuserList();
-											}
+											success: function() {}
 										});
 									}
 								});
@@ -914,9 +984,7 @@
 											title: '禁言成功',
 											content: res.msg,
 											showCancel: false,
-											success: function() {
-												that.getuserList();
-											}
+											success: function() {}
 										});
 									}
 								});
@@ -934,9 +1002,7 @@
 											title: '禁歌成功',
 											content: res.msg,
 											showCancel: false,
-											success: function() {
-												that.getuserList();
-											}
+											success: function() {}
 										});
 									}
 								});

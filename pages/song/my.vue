@@ -10,12 +10,12 @@
 			<view class="weui-panel__bd">
 				<view class="weui-media-box weui-media-box_appmsg" v-for="(item,index) in songList" @click="showMenu(item)">
 					<view class="weui-media-box__hd">
-						<img class="weui-media-box__thumb" :src="item.pic" alt="">
+						<img class="weui-media-box__thumb song_image" :src="item.pic" alt="">
 					</view>
 					<view class="weui-media-box__bd">
 						<view class="weui-media-box__title">{{item.name}}</view>
 						<view class="weui-media-box__desc">点过 <span style="color:orangered;font-size:16px;">{{item.played}}</span> 次 歌手
-							{{item.singer}}</view>
+							{{item.singer}}<br>.</view>
 					</view>
 				</view>
 			</view>
@@ -31,6 +31,8 @@
 				songList: [],
 				room_id: 0,
 				isPullDown: false,
+				page: 1,
+				isLoading: false,
 			}
 		},
 		onLoad(e) {
@@ -38,7 +40,15 @@
 		},
 		onPullDownRefresh() {
 			this.isPullDown = true;
+			this.page = 1;
 			this.getMySongList();
+		},
+		onReachBottom() {
+			let that = this;
+			if (!that.isLoading) {
+				that.page++;
+				that.getMySongList();
+			}
 		},
 		onShow() {
 			let that = this;
@@ -47,14 +57,24 @@
 		methods: {
 			getMySongList() {
 				let that = this;
+				that.isLoading = true;
 				that.app.request({
 					url: "song/mySongList",
+					data: {
+						page: that.page
+					},
+					loading: "读取中",
 					success: function(res) {
+						that.isLoading = false;
 						if (that.isPullDown) {
 							uni.stopPullDownRefresh();
 							that.isPullDown = false;
 						}
-						that.songList = res.data;
+						if(that.page  == 1){
+							that.songList = res.data;
+						}else{
+							that.songList = that.songList.concat(res.data);
+						}
 					}
 				});
 			},
@@ -74,13 +94,9 @@
 									},
 									loading: "点歌中",
 									success: function(res) {
-										uni.showModal({
-											title: '点歌成功',
-											content: res.msg,
-											showCancel: false,
-											success: function() {
-												that.getMySongList();
-											}
+										that.getMySongList();
+										uni.showToast({
+											title: "点歌成功"
 										});
 									}
 								});
@@ -104,6 +120,7 @@
 	@import "/static/style/weui.scss";
 	@import "/static/style/main.scss";
 	@import '/static/style/font/iconfont.scss';
+
 	.songList {
 		padding-bottom: constant(safe-area-inset-bottom);
 		padding-bottom: env(safe-area-inset-bottom);
@@ -125,5 +142,9 @@
 		font-size: 14px;
 		color: #999;
 		text-align: center;
+	}
+
+	.song_image {
+		border-radius: 10px;
 	}
 </style>

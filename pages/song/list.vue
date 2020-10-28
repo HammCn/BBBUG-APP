@@ -10,7 +10,7 @@
 			<view class="weui-panel__bd">
 				<view class="weui-media-box weui-media-box_appmsg" v-for="(item,index) in songList" @click="showMenu(item.song)">
 					<view class="weui-media-box__hd">
-						<img class="weui-media-box__thumb" :src="item.song.pic" alt="">
+						<img class="weui-media-box__thumb song_image" :src="item.song.pic" alt="">
 					</view>
 					<view class="weui-media-box__bd">
 						<view class="weui-media-box__title"><span class="number">No.{{index+1}}</span>{{item.song.name}}({{item.song.singer}})</view>
@@ -20,7 +20,7 @@
 							</block>
 							<block v-if="!item.at">
 								{{urldecode(item.user.user_name)}} 点的歌
-							</block>
+							</block><br>.
 						</view>
 					</view>
 				</view>
@@ -152,5 +152,8 @@
 		font-size: 14px;
 		color: #999;
 		text-align: center;
+	}
+	.song_image{
+		border-radius: 10px;
 	}
 </style>
