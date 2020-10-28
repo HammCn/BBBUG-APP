@@ -1,23 +1,14 @@
 <style>
-
-	.chatForm {
+	.chatInput {
 		position: fixed;
 		left: 0;
 		bottom: 0;
 		right: 0;
-		height: 60px;
-		background-color: white;
-		padding: 10px;
-	}
-
-	.chatInput {
-		position: fixed;
-		left: 15px;
-		bottom: 15px;
-		right: 15px;
+		height: 50px;
+		background-color: #FFFFFF;
 		font-size: 16px;
+		padding: 5px 10px;
 	}
-
 
 	.historyList {
 		position: fixed;
@@ -25,6 +16,7 @@
 		right: 0;
 		bottom: 0;
 		top: 0;
+		padding-bottom: 20px;
 	}
 	.item_system{
 		text-align: center;
@@ -36,76 +28,215 @@
 		text-align: center;
 	}
 	.item{
-		flex-direction: row;
+		flex-direction: column;
 		margin: 10px;
 		margin-top: 20px;
+		justify-content: flex-start;
+		align-items: flex-start;
+	}
+	.item_mine{
+		flex-direction: column;
+		margin: 10px;
+		margin-top: 20px;
+		text-align: right;
+		justify-content: flex-end;
+		align-items: flex-end;
 	}
 	.user_head_box{
-		display: flex;
-		width: 50px;
+		flex-direction: row;
 	}
 	.user_head_image{
-		width: 40px;
-		height: 40px;
+		width: 50px;
+		height: 50px;
+		border-radius: 10px;
+		border-color: #FFFFFF;
+		border-style: solid;
+		border-width: 1px;
 	}
-	.chat_item_body{
+	.chat_item_body_left{
+		text-align: left;
+		justify-content: flex-start;
+		padding-left: 60px;
+		padding-right: 80px;
+		margin-top: -30px;
+		flex: 1;
+		flex-wrap: wrap;
+	}
+	.chat_item_body_right{
+		text-align: right;
+		padding-left: 80px;
+		padding-right: 60px;
+		margin-top: -30px;
+		flex: 1;
+		flex-wrap: wrap-reverse;
 	}
 	.chat_item_user_name{
-		font-size: 16px;
-		color: #333;
+		font-size: 14px;
+		color: #999;
+		margin-top: 3px;
+		margin-left: 5px;
+		margin-right: 5px;
 	}
 	.chat_item_text{
-		margin-top: 5px;
-		border-radius: 5px;
-		background-color: #CCCCCC;
+		margin-top: 10px;
+		border-radius: 10px;
+		background-color: #E5E5E5;
 		color: #333;
-		padding: 5px 10px;
-		font-size: 15px;
+		padding: 10px;
+		font-size: 16px;
 	}
 	.chat_item_image_box{
-		background-color: red;
+		margin-top: 10px;
+		border-radius: 10px;
+		padding: 2px;
+		background-color: white;
 	}
 	.chat_item_image_content{
 		width: 100%;
 		height: 100%;
+	}
+	.player{
+		position: fixed;
+		right: 10px;
+		top: 10px;
+		z-index:100;
+		flex-direction: row;
+		background-color: white;
+		border-radius: 10px;
+		padding: 5px;
+		border-color: #ccc;
+		border-width: 1px;
+		border-style:dotted;
+	}
+	.player_image{
+		width: 40px;
+		height: 40px;
+		border-radius: 10px;
+	}
+	.player_info{
+		padding-right: 10px;
+	}
+	.player_song{
+		font-size: 14px;
+		color:#333;
+	}
+	.player_user{
+		font-size: 12px;
+		color:#999;
+		margin-top: 5px;
+	}
+	.chatMenu{
+	}
+	.chatMenu_image{
+		position: fixed;
+		right: 10px;
+		bottom: 10px;
+		width: 32px;
+		height: 32px;
+	}
+	
+	.menuBody {
+		z-index: 10;
+		position: fixed;
+		left: 0;
+		bottom: 0;
+		right: 0;
+		background-color: #EEEEEE;
+		border-top-color: #e5e5e5;
+		border-top-width: 1px;
+		border-style: solid;
+		flex-direction: row;
+		padding: 10px;
+	}
+	.menuMain{
+		text-align: center;
+		justify-content: center;
+		align-items: center;
+		background-color: #fff;
+		color: #666;
+		padding: 10px;
+		height: 60px;
+		width: 60px;
+		border-radius: 10px;
+	}
+	.menuItem{
+		margin: 5px;
+		text-align: center;
+		justify-content: center;
+		align-items: center;
+	}
+	.menuTitle {
+		text-align: center;
+		font-size: 12px;
+		padding: 10px;
+	}
+	.menuImage{
+		width: 24px;
+		height: 24px;
 	}
 </style>
 <template>
 	<view class="uniapp">
 		<block v-if="showRoomPage">
 			<scroll-view @click="historyClicked" class="historyList" id="historyList" scroll-y="true" :scroll-with-animation="true"
-			 :scroll-top="scrollTop">
+			 :scroll-into-view="viewId" :style="{bottom:historyListBottom+'px'}">
 				<view id="historyBox">
-					<block v-for="(item,index) in historyList">
-						<view :class="item.user.user_id==userInfo.user_id?'item_mine':'item'" v-if="item.type=='text'" :id="'sha_'+item.sha">
-							<view class="user_head_box">
-								<image class="user_head_image" :src="item.user.user_head" @longtap="doAtUser(item.user)" @tap="showMenuUserHead(item)"></image>
-							</view>
-							<view class="chat_item_body">
+					<view v-for="(item,index) in historyList">
+						<view class="item" :id="'sha_'+item.sha" v-if="item.type=='text' && item.user.user_id!=userInfo.user_id">
+							<view class="user_head_box" @click="doUserHeadEvent(item)">
+								<image class="user_head_image" :src="item.user.user_head"></image>
 								<text class="chat_item_user_name">{{item.user.user_name}}</text>
-								<block v-if="!item.at">
+							</view>
+							<view class="chat_item_body_left">
+								<view v-if="!item.at" class="chat_item_text_box">
+									<text class="chat_item_text" v-if="item.user.user_id==userInfo.user_id && userInfo.user_sex==1" style="background-color: #66CBFF;color:#333;">{{urldecode(item.content)}}</text>
+									<text class="chat_item_text" v-if="item.user.user_id==userInfo.user_id && userInfo.user_sex==0" style="background-color: #FE9898;color:white;">{{urldecode(item.content)}}</text>
+									<text class="chat_item_text" v-if="item.user.user_id!=userInfo.user_id">{{urldecode(item.content)}}</text>
+								</view>
+								<view v-if="item.at" class="chat_item_text_box">
+									<text class="chat_item_text" v-if="item.at.user_id==userInfo.user_id" style="background-color: #666;color:white;">{{urldecode(item.content)}}</text>
+									<text class="chat_item_text" v-if="item.at.user_id!=userInfo.user_id&&item.user.user_id!=userInfo.user_id">{{urldecode(item.content)}}</text>
+								</view>
+							</view>
+						</view>
+						<view class="item_mine" :id="'sha_'+item.sha" v-if="item.type=='text' && item.user.user_id==userInfo.user_id">
+							<view class="user_head_box">
+								<text class="chat_item_user_name">{{item.user.user_name}}</text>
+								<image class="user_head_image" :src="item.user.user_head"></image>
+							</view>
+							<view class="chat_item_body_right">
+								<view v-if="!item.at" class="chat_item_text_box">
 									<text class="chat_item_text" v-if="item.user.user_id==userInfo.user_id && userInfo.user_sex==1" style="background-color: #66CBFF;color:black;">{{urldecode(item.content)}}</text>
 									<text class="chat_item_text" v-if="item.user.user_id==userInfo.user_id && userInfo.user_sex==0" style="background-color: #FE9898;color:white;">{{urldecode(item.content)}}</text>
 									<text class="chat_item_text" v-if="item.user.user_id!=userInfo.user_id">{{urldecode(item.content)}}</text>
-								</block>
-								<block v-if="item.at">
-									<text class="chat_item_text" v-if="item.at.user_id==userInfo.user_id" style="background-color: #666;color:white;"
-									 v-html="'@'+urldecode(item.at.user_name)+' '+urldecode(item.content)"></text>
+								</view>
+								<view v-if="item.at" class="chat_item_text_box">
+									<text class="chat_item_text" v-if="item.at.user_id==userInfo.user_id" style="background-color: #666;color:white;">{{urldecode(item.content)}}</text>
 									<text class="chat_item_text" v-if="item.at.user_id!=userInfo.user_id&&item.user.user_id==userInfo.user_id && userInfo.user_sex==1"
-									 style="background-color: #66CBFF;color:black;" v-html="'@'+urldecode(item.at.user_name)+' '+urldecode(item.content)"></text>
+									 style="background-color: #66CBFF;color:black;">{{urldecode(item.content)}}</text>
 									<text class="chat_item_text" v-if="item.at.user_id!=userInfo.user_id&&item.user.user_id==userInfo.user_id && userInfo.user_sex==0"
-									 style="background-color: #FE9898;color:white;" v-html="'@'+urldecode(item.at.user_name)+' '+urldecode(item.content)"></text>
-									<text class="chat_item_text" v-if="item.at.user_id!=userInfo.user_id&&item.user.user_id!=userInfo.user_id"
-									 v-html="'@'+urldecode(item.at.user_name)+' '+urldecode(item.content)"></text>
-								</block>
+									 style="background-color: #FE9898;color:white;">{{urldecode(item.content)}}</text>
+									<text class="chat_item_text" v-if="item.at.user_id!=userInfo.user_id&&item.user.user_id!=userInfo.user_id">{{urldecode(item.content)}}</text>
+								</view>
 							</view>
 						</view>
-						<view :class="item.user.user_id==userInfo.user_id?'item_mine':'item'" v-if="item.type=='img'" :id="'sha_'+item.sha">
+						<view class="item_mine" v-if="item.type=='img' && item.user.user_id==userInfo.user_id" :id="'sha_'+item.sha">
 							<view class="user_head_box">
-								<image class="user_head_image" :src="item.user.user_head" @longpress="doAtUser(item.user)"></image>
-							</view>
-							<view class="chat_item_body">
 								<text class="chat_item_user_name">{{item.user.user_name}}</text>
+								<image class="user_head_image" :src="item.user.user_head"></image>
+							</view>
+							<view class="chat_item_body_right">
+								<view class="chat_item_image_box">
+									<image class="chat_item_image_content" :src="getStaticUrl(urldecode(item.content))" mode="widthFix" @click="fullViewImage(getStaticUrl(urldecode(item.resource)))"></image>
+								</view>
+							</view>
+						</view>
+						<view class="item" v-if="item.type=='img' && item.user.user_id!=userInfo.user_id" :id="'sha_'+item.sha">
+							<view class="user_head_box" @click="doUserHeadEvent(item)">
+								<image class="user_head_image" :src="item.user.user_head"></image>
+								<text class="chat_item_user_name">{{item.user.user_name}}</text>
+							</view>
+							<view class="chat_item_body_left">
 								<view class="chat_item_image_box">
 									<image class="chat_item_image_content" :src="getStaticUrl(urldecode(item.content))" mode="widthFix" @click="fullViewImage(getStaticUrl(urldecode(item.resource)))"></image>
 								</view>
@@ -114,89 +245,69 @@
 						<view class="item_system" v-if="item.type=='system'">
 							<text class="item_system_text">{{item.content}}</text>
 						</view>
-					</block>
+					</view>
 				</view>
+				<view :id="'im_'+historyList.length" class="bottom"></view>
 			</scroll-view>
-			<view class="chatForm">
-				<form @submit="doSendMessage">
-					<input class="chatInput" type="text" confirm-type="send" confirm-hold="true" placeholder="全员禁言中,你暂时无法发言" v-model="messageObj.message"
-					 v-if="chatType=='text' && room.room_sendmsg==1" disabled="disabled" />
-					<input class="chatInput" type="text" confirm-type="send" confirm-hold="true" placeholder="说点什么吧..." v-model="messageObj.message"
-					 v-if="chatType=='text' && room.room_sendmsg==0" @keydown="doKeyDown" :focus="messageObj.focus" />
-					<input disabled="disabled" v-if="chatType=='voice'" class="chatInput" type="text" confirm-type="send" confirm-hold="true"
-					 placeholder="点击这里开始录音">
-				</form>
-				<view class="chatButton">
-					<view class="chatType chatIcon" v-if="chatType=='voice' && room.room_sendmsg==0" @click="chatType='text'"><i class="iconfont icon-changyongtubiao-mianxing-21"></i></view>
-					<view class="chatType chatIcon" v-if="chatType=='text' && room.room_sendmsg==0" @click="chatType='voice'"><i class="iconfont icon-changyongtubiao-mianxing-36"></i></view>
-					<view class="chatMore chatIcon" @click="showMenuBox=true"><i class="iconfont icon-icon_roundadd_fill"></i></view>
+			<input class="chatInput" type="text" placeholder="全员禁言中,你暂时无法发言" v-if="chatType=='text' && room.room_sendmsg==1"
+			 disabled="true" />
+			<input disabled="disabled" v-if="chatType=='voice'" class="chatInput" type="text" placeholder="点击这里开始录音">
+			<input class="chatInput" type="text" confirm-type="send" confirm-hold="true" placeholder="说点什么吧..." v-model="messageObj.message"
+			 v-if="chatType=='text' && room.room_sendmsg==0" @keydown="doKeyDown" :focus="messageObj.focus" @confirm="doSendMessage" />
+			<image @click="doShowMenuBox" class="chatMenu_image" src="/static/image/app.png" mode="widthFix"></image>
+
+			<view class="player" v-if="song.song" @click="doMusicClicked">
+				<view class="player_info">
+					<text class="player_song">{{song.song.name}} - {{song.song.singer}}</text>
+					<text class="player_user">{{urldecode(song.user.user_name)}}</text>
 				</view>
+				<image class="player_image" :src="song.song.pic"></image>
 			</view>
-			<movable-area width="800" height="800" v-if="song.song">
-				<movable-view out-of-bounds="true" inertia="true" width="60px" height="60px" direction="all" @click="doMusicClicked">
-					<image class="playerImage" :animation="animationData" :src="song.song.pic"></image>
-				</movable-view>
-			</movable-area>
 			<view class="menuBox" v-if="showMenuBox">
-				<view class="menuShadow" @click="showMenuBox=false"></view>
-				<view class="menuBody">
-					<view class="menuItem">
-						<view class="menuMain" @click="chooseImage">
-							<view class="menuIcon">
-								<view class="iconfont icon-icon_photo_fill"></view>
-							</view>
-							<view class="menuTitle">发图</view>
+				<scroll-view show-scrollbar="false" scroll-with-animation="true" scroll-x="true" class="menuBody">
+					<view class="menuItem" @click="chooseImage">
+						<view class="menuMain">
+							<image class="menuImage" src="/static/image/icon_photo_fill.png"></image>
 						</view>
+						<text class="menuTitle">发图</text>
 					</view>
-					<view class="menuItem">
-						<view class="menuMain" @click="doOpenPage('addSong')">
-							<view class="menuIcon">
-								<view class="iconfont icon-icon_invite_fill"></view>
-							</view>
-							<view class="menuTitle">点歌</view>
+					<view class="menuItem" @click="doOpenPage('addSong')">
+						<view class="menuMain">
+							<image class="menuImage" src="/static/image/icon_dingtab.png"></image>
 						</view>
+						<text class="menuTitle">点歌</text>
 					</view>
-					<view class="menuItem">
-						<view class="menuMain" @click="doOpenPage('songList')">
-							<view class="menuIcon">
-								<view class="iconfont icon-icon_dingtab"></view>
-							</view>
-							<view class="menuTitle">已点</view>
+					<view class="menuItem" @click="doOpenPage('songList')">
+						<view class="menuMain">
+							<image class="menuImage" src="/static/image/icon_invite_fill.png"></image>
 						</view>
+						<text class="menuTitle">已点</text>
 					</view>
-					<view class="menuItem">
-						<view class="menuMain" @click="doOpenPage('mySong')">
-							<view class="menuIcon">
-								<view class="iconfont icon-icon_people_fill"></view>
-							</view>
-							<view class="menuTitle">我的</view>
+					<view class="menuItem" @click="doOpenPage('mySong')">
+						<view class="menuMain">
+							<image class="menuImage" src="/static/image/icon_people_fill.png"></image>
 						</view>
+						<text class="menuTitle">我的</text>
 					</view>
-					<view class="menuItem">
-						<view class="menuMain" @click="doOpenPage('onLine')">
-							<view class="menuIcon">
-								<view class="iconfont icon-icon_meeting_fill"></view>
-							</view>
-							<view class="menuTitle">在线</view>
+					<view class="menuItem" @click="doOpenPage('onLine')">
+						<view class="menuMain">
+							<image class="menuImage" src="/static/image/icon_meeting_fill.png"></image>
 						</view>
+						<text class="menuTitle">在线</text>
 					</view>
-					<view class="menuItem">
-						<view class="menuMain" @click="doOpenPage('invate')">
-							<view class="menuIcon">
-								<view class="iconfont icon-changyongtubiao-mianxing-37"></view>
-							</view>
-							<view class="menuTitle">邀请</view>
+					<view class="menuItem" @click="doOpenPage('invate')">
+						<view class="menuMain">
+							<image class="menuImage" src="/static/image/icon_invate.png"></image>
 						</view>
+						<text class="menuTitle">邀请</text>
 					</view>
-					<view class="menuItem">
-						<view class="menuMain" @click="doOpenPage('setting')">
-							<view class="menuIcon">
-								<view class="iconfont icon-changyongtubiao-mianxing-32"></view>
-							</view>
-							<view class="menuTitle">管理</view>
+					<view class="menuItem" @click="doOpenPage('setting')">
+						<view class="menuMain">
+							<image class="menuImage" src="/static/image/icon_setting.png"></image>
 						</view>
+						<text class="menuTitle">管理</text>
 					</view>
-				</view>
+				</scroll-view>
 			</view>
 		</block>
 		<view class="formPassword" v-if="showPasswordForm">
@@ -215,20 +326,15 @@
 		data() {
 			return {
 				// 聊天页面时时滚动样式
-				scrollTop: 0,
-				style: {
-					pageHeight: 0,
-					contentViewHeight: 0,
-					footViewHeight: 90,
-					mitemHeight: 0
-				},
+				viewId: "",
+				historyListBottom: 60,
 				bgAudioMannager: null,
 				config: {
 					lockScreen: false,
 				},
-				showMenuBox: false,
 				loading: false,
 				showRoomPage: false,
+				showMenuBox: false,
 				showPasswordForm: false,
 				app: getApp(),
 				userInfo: null,
@@ -239,7 +345,6 @@
 				room_id: 0,
 				room: false,
 				password: "",
-				animationData: {},
 				rotate: 0,
 				playerTimer: null,
 				chatType: 'text',
@@ -250,13 +355,17 @@
 					at: false,
 					focus: false,
 				},
+				//双击
+				lastTapTimeoutFunc: null,
+				touchStartTime: 0,
+				touchEndTime: 0,
+				lastTapTime: 0,
 			}
 		},
 		onLoad() {
 			let that = this;
 			that.bgAudioMannager = uni.getBackgroundAudioManager();
-			this.room_id = uni.getStorageSync('room_id') || 888;
-			// this.runPlayAnimation();
+			this.room_id = uni.getStorageSync('room_id') || 10000;
 			that.app.user.getMyInfo({
 				success(userInfo) {
 					that.userInfo = userInfo;
@@ -264,9 +373,9 @@
 				}
 			});
 			uni.$on('WebSocketMessage', function(data) {
-				console.log(data);
 				try {
 					that.messageController(JSON.parse(data));
+					that.autoScroll();
 				} catch (error) {
 					console.error(error);
 				}
@@ -283,6 +392,7 @@
 				that.doAtUser(user);
 			});
 			uni.$on('RoomChanged', function(room_id) {
+				console.log(room_id);
 				uni.setNavigationBarTitle({
 					title: '正在进入'
 				});
@@ -293,20 +403,12 @@
 				uni.setStorageSync('room_id', parseInt(that.room_id));
 				that.getRoomInfo();
 			});
-			uni.onKeyboardHeightChange(function(e) {
-				const res = uni.getSystemInfoSync(); //获取手机可使用窗口高度
-				that.style.pageHeight = res.windowHeight;
-				that.style.contentViewHeight = res.windowHeight - uni.getSystemInfoSync().screenWidth / 750 * (100) - (e.height ==
-					0 ? 40 : 20) - e.height; //像素 
-				that.autoScroll();
-			});
+			uni.onKeyboardHeightChange(function(e) {});
 			that.bgAudioMannager.onCanplay(function() {
-				// that.runPlayAnimation();
 				let time = parseInt(new Date().valueOf() / 1000) - that.song.since - 3;
 				that.bgAudioMannager.seek(time > 0 ? time : 0);
 			});
 			that.bgAudioMannager.onEnded(function() {
-				that.stopPlayerAnimation();
 				that.song = {
 					song: null,
 					user: null
@@ -334,6 +436,35 @@
 			}
 		},
 		methods: {
+			doUserHeadEvent: function(e) {
+				var that = this
+				that.showMenuUserHead(e);
+				return;
+				// 控制点击事件在350ms内触发，加这层判断是为了防止长按时会触发点击事件
+				if (that.touchEndTime - that.touchStartTime < 350) {
+					// 当前点击的时间
+					var currentTime = e.timeStamp
+					var lastTapTime = that.lastTapTime
+					// 更新最后一次点击时间
+					that.lastTapTime = currentTime
+
+					// 如果两次点击时间在300毫秒内，则认为是双击事件
+					if (currentTime - lastTapTime < 300) {
+						// 成功触发双击事件时，取消单击事件的执行
+						clearTimeout(that.lastTapTimeoutFunc);
+						that.doTouch(e.user);
+						return;
+					}
+				}
+				that.showMenuUserHead(e);
+			},
+			doShowMenuBox() {
+				let that = this;
+				that.showMenuBox = true;
+				that.historyListBottom = 140;
+				uni.hideKeyboard();
+				that.autoScroll();
+			},
 			doKeyDown() {
 				let that = this;
 				if (that.messageObj.at) {
@@ -389,7 +520,6 @@
 									},
 									success: function(res) {
 										that.bgAudioMannager.pause();
-										that.stopPlayerAnimation();
 										that.song = {
 											song: null,
 											user: null
@@ -410,29 +540,27 @@
 			},
 			doAtUser(user) {
 				let that = this;
+				uni.showToast({
+					title: "at"
+				});
 				that.messageObj.at = user;
 				that.messageObj.message = "@" + decodeURIComponent(user.user_name) + " " + that.messageObj.message;
 				that.messageObj.focus = true;
 			},
 			autoScroll() {
 				let that = this;
-				// that.$nextTick(function() {
-				// 	let query = uni.createSelectorQuery();
-				// 	query.select('#historyList').boundingClientRect();
-				// 	query.select('#historyBox').boundingClientRect();
-				// 	query.exec(function(res) {
-				// 		if (res[0] && res[1]) {
-				// 			console.log(res[0].height);
-				// 			console.log(res[1].height);
-				// 			that.scrollTop = res[1].height - res[0].height + 150;
-				// 		}
-				// 	});
-				// });
+				this.viewIndex = "";
+				//设置viewIndex值，使聊天滚动到底部  
+				this.$nextTick(() => {
+					this.viewId = "im_" + this.historyList.length;
+				});
 			},
 			historyClicked() {
 				let that = this;
 				that.showMenuBox = false;
+				that.historyListBottom = 60;
 				uni.hideKeyboard();
+				that.autoScroll();
 			},
 			saveMessageHistory() {
 				let that = this;
@@ -445,6 +573,9 @@
 					case 'text':
 					case 'img':
 					case 'system':
+						if (msg.type == 'text' && msg.at) {
+							msg.content = "@" + decodeURIComponent(msg.at.user_name) + " " + msg.content;
+						}
 						that.addMessageToList(msg);
 						break;
 					case 'addSong':
@@ -510,8 +641,8 @@
 				}
 				console.log('Play Music');
 				that.song = msg;
-				that.bgAudioMannager.title = "正在播放 " + msg.song.name;
-				that.bgAudioMannager.singer = msg.song.singer + ' - ' + that.room.room_name;
+				that.bgAudioMannager.title = msg.song.name + " - " + msg.song.singer;
+				that.bgAudioMannager.singer = "点歌人:" + decodeURIComponent(msg.user.user_name) + ' (' + that.room.room_name + ')';
 				that.bgAudioMannager.coverImgUrl = msg.song.pic;
 				that.bgAudioMannager.src = "https://api.bbbug.com/api/song/playurl?mid=" + msg.song.mid;
 				that.bgAudioMannager.play();
@@ -536,7 +667,9 @@
 							msg: encodeURIComponent(message),
 							at: that.messageObj.at
 						},
-						success: function(res) {},
+						success: function(res) {
+							that.messageObj.at = false;
+						},
 						error: function(res) {
 							that.messageObj.message = message_old;
 							uni.showModal({
@@ -548,6 +681,16 @@
 					});
 				}
 			},
+			randomString(len) {
+				len = len || 32;
+				var $chars = 'ABCDEFGHJKMNPQRSTWXYZabcdefhijkmnprstwxyz2345678'; /****默认去掉了容易混淆的字符oOLl,9gq,Vv,Uu,I1****/
+				var maxPos = $chars.length;
+				var pwd = '';
+				for (i = 0; i < len; i++) {
+					pwd += $chars.charAt(Math.floor(Math.random() * maxPos));
+				}
+				return pwd;
+			},
 			addMessageToList(msg) {
 				let that = this;
 				if (that.historyList.length > 100) {
@@ -557,32 +700,57 @@
 				that.saveMessageHistory();
 				that.autoScroll();
 			},
-			runPlayAnimation() {
-				let that = this;
-				that.stopPlayerAnimation();
-				var animation = uni.createAnimation({
-					duration: 10000,
-					timingFunction: 'linear',
-				});
-				that.rotate += 60;
-				if (that.rotate > 360) {
-					that.rotate = 0;
-				}
-				that.rotate -= 180;
-				animation.rotate(that.rotate).step();
-				that.animationData = animation.export();
-				clearTimeout(that.playerTimer);
-				that.playerTimer = setTimeout(function() {
-					that.runPlayAnimation();
-				}.bind(that), 10000);
-			},
-			stopPlayerAnimation() {
-				let that = this;
-				clearTimeout(that.playerTimer);
-				that.animationData = {};
-			},
 			urldecode(str) {
 				return decodeURIComponent(str);
+			},
+			connect() {
+				let that = this;
+				if (that.app.webSocket.isConnected) {
+					console.log("需要斷開")
+					that.app.webSocket.closeWss();
+					setTimeout(function(){
+						that.connect();
+					},1000);
+				}
+				that.app.webSocket.connectWss();
+				uni.hideLoading();
+				// let str = uni.getStorageSync(that.historyKey + that.room_id) || false;
+				// that.historyList = str ? JSON.parse(str) : [];
+				that.addSystemMessage(that.room.room_notice || '服务器连接成功');
+				that.showPasswordForm = false;
+				that.showRoomPage = true;
+				that.app.request({
+					url: 'message/getMessageList',
+					data: {
+						room_id: that.room_id,
+						per_page: 100,
+					},
+					success: function(res) {
+						that.historyList = [];
+						for (let i = 0; i < res.data.length; i++) {
+							let _obj = false;
+							try {
+								_obj = JSON.parse(decodeURIComponent(res.data[i].message_content));
+							} catch (error) {}
+							if (!_obj) {
+								continue;
+							}
+							if (_obj.type == "text") {
+								if (_obj.at) {
+									_obj.content = '@' + _obj.at.user_name + " " + _obj.content;
+								}
+							}
+							_obj.time = res.data[i].message_createtime;
+							that.historyList.unshift(_obj);
+						}
+						that.autoScroll();
+					},
+
+					error: function(res) {
+						console.log(res);
+					}
+				});
+
 			},
 			getRoomInfo() {
 				let that = this;
@@ -597,28 +765,21 @@
 					},
 					success(res) {
 						that.room = res.data;
-						uni.setNavigationBarTitle({
-							title: that.room.room_name
-						});
+						// uni.setNavigationBarTitle({
+						// 	title: that.room.room_name
+						// });
 						that.app.request({
 							url: 'room/getWebsocketUrl',
 							data: {
 								channel: that.room_id
 							},
 							success: function(res) {
-								uni.hideLoading();
 								that.app.webSocket.config.wssUrl = 'wss://websocket.bbbug.com/?account=' +
 									res.data.account + '&channel=' +
 									res.data.channel + '&ticket=' + res.data.ticket;
-								if (!that.app.webSocket.isConnected) {
-									that.app.webSocket.connectWss();
-								}
-								// let str = uni.getStorageSync(that.historyKey + that.room_id) || false;
-								// that.historyList = str ? JSON.parse(str) : [];
-								that.addSystemMessage(that.room.room_notice || '服务器连接成功');
-								that.showPasswordForm = false;
-								that.showRoomPage = true;
-								that.autoScroll();
+								
+								that.connect();
+
 							},
 
 							error: function(res) {
@@ -667,7 +828,6 @@
 			},
 			doOpenPage(page) {
 				let that = this;
-				that.showMenuBox = false;
 				switch (page) {
 					case 'addSong':
 						uni.navigateTo({
@@ -690,7 +850,7 @@
 							isMaster = 1;
 						}
 						uni.navigateTo({
-							url: './online?room_id=' + that.room_id + "&room_admin=" + isMaster
+							url: '../room/online?room_id=' + that.room_id + "&room_admin=" + isMaster
 						});
 						break;
 					default:
@@ -782,6 +942,11 @@
 								});
 								break;
 							default:
+								uni.showModal({
+									title: "BBBUG",
+									content: menu[res.tapIndex] + "即将上线",
+									showCancel: false
+								});
 						}
 					}
 				});
@@ -793,9 +958,19 @@
 					return 'https://cdn.bbbug.com/uploads/' + url;
 				}
 			},
+			doTouch(user) {
+				let that = this;
+				that.request({
+					url: "message/touch",
+					data: {
+						at: user.user_id,
+						room_id: that.room_id
+					},
+					success(res) {}
+				});
+			},
 			chooseImage() {
 				let that = this;
-				that.showMenuBox = false;
 				uni.chooseImage({
 					sizeType: "compressed",
 					sourceType: ['album'],

@@ -6,6 +6,29 @@
 			// "navigationStyle": "custom",
 			"navigationBarTextStyle": "black",
 			"app-plus": {
+				"softinputMode": "adjustPan",
+				"titleNView": {
+					"buttons": [{
+						"text": "我的",
+						"fontSize": "16px",
+						"float": "left",
+						"width": "60px"
+					}, {
+						"text": "换房",
+						"fontSize": "16px",
+						"float": "right",
+						"width": "60px"
+					}]
+				}
+			}
+		}
+	}, {
+		"path": "pages/room/index",
+		"style": {
+			"navigationBarTitleText": "房间",
+			// "navigationStyle": "custom",
+			"navigationBarTextStyle": "black",
+			"app-plus": {
 				"titleNView": {
 					"buttons": [{
 						"text": "我的",

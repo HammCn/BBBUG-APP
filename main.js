@@ -23,6 +23,7 @@ App.globalData = {
 		}
 	}
 };
+
 let app = new Vue(App);
 //高度封装一个可复用的请求方法 data参数随便你传 报错算我输
 app.request = function(_data) {
@@ -236,17 +237,15 @@ app.webSocket = {
 	},
 	isConnected: false,
 	connection: "",
-	isForce: false,
 	closeWss() {
 		let that = this;
-		if (!that.isConnected) {
+		if (!that.isConnected || !that.connection) {
 			return false;
 		}
 		// plus.push.createMessage('你掉线啦~');
 		that.connection.send({
 			data: "bye"
 		});
-		that.isForce = true;
 		console.error('已执行关闭');
 	},
 	heartBeat() {
@@ -265,8 +264,7 @@ app.webSocket = {
 	},
 	reConnect() {
 		let that = this;
-		if (!that.isForce) {
-			console.log("Relogin in 5s");
+		if (!that.isConnected) {
 			setTimeout(function() {
 				that.connectWss();
 			}, 5000);
@@ -274,7 +272,7 @@ app.webSocket = {
 	},
 	connectWss() {
 		let that = this;
-		if (that.isConnected) {
+		if (that.isConnected || that.connection) {
 			return false;
 		}
 		that.connection = uni.connectSocket({
@@ -283,7 +281,6 @@ app.webSocket = {
 				console.log(res)
 				that.connection.onOpen(function(res) {
 					that.isConnected = true;
-					that.isForce = false;
 					uni.hideLoading();
 					that.heartBeat();
 				});

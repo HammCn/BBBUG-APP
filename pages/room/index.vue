@@ -828,6 +828,9 @@
 </script>
 
 <style>
+	@import "/static/style/weui.scss";
+	@import "/static/style/main.scss";
+	@import '/static/style/font/iconfont.scss';
 	.playerImage {
 		width: 60px;
 		height: 60px;
