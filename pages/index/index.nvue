@@ -214,7 +214,7 @@
 	<view class="uniapp">
 		<block v-if="showRoomPage">
 			<scroll-view @click="historyClicked" class="historyList" id="historyList" scroll-y="true" :scroll-with-animation="true"
-			 :scroll-into-view="viewId" :style="{bottom:safeAreaBottom+'px',paddingBottom:(safeAreaBottom+50)+'px'}">
+			 :scroll-into-view="viewId" :style="{bottom:safeAreaBottom+'px',paddingBottom:(safeAreaBottom+60)+'px'}">
 				<view id="historyBox">
 					<view v-for="(item,index) in historyList">
 						<view class="item" :id="'sha_'+item.sha" v-if="item.type=='text' && item.user.user_id!=userInfo.user_id">
@@ -395,7 +395,7 @@
 		onLoad() {
 			let that = this;
 			const res = uni.getSystemInfoSync();
-			that.safeAreaBottom = res.safeAreaInsets.bottom == 0 ? 10 : res.safeAreaInsets.bottom;
+			that.safeAreaBottom = res.safeAreaInsets.bottom == 0 ? 0 : res.safeAreaInsets.bottom;
 			that.bgAudioMannager = uni.getBackgroundAudioManager();
 			this.room_id = uni.getStorageSync('room_id') || 10000;
 			that.app.user.getMyInfo({
