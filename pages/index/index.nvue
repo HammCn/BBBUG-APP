@@ -214,7 +214,7 @@
 	<view class="uniapp">
 		<block v-if="showRoomPage">
 			<scroll-view @click="historyClicked" class="historyList" id="historyList" scroll-y="true" :scroll-with-animation="true"
-			 :scroll-into-view="viewId" :style="{paddingBottom:(safeAreaBottom+70)+'px'}">
+			 :scroll-into-view="viewId" :style="{paddingBottom:(safeAreaBottom+70)+'px'}" height="400">
 				<view id="historyBox">
 					<view v-for="(item,index) in historyList">
 						<view class="item" :id="'sha_'+item.sha" v-if="item.type=='text' && item.user.user_id!=userInfo.user_id">
@@ -280,14 +280,8 @@
 						</view>
 					</view>
 				</view>
-				<view :id="'im_'+historyList.length" class="bottom"></view>
+				<view :id="'view_'+(historyList[historyList.length-1].view_id)"></view>
 			</scroll-view>
-			<view class="emoji" :style="{bottom:(safeAreaBottom+60)+'px'}" blurEffect="light" v-if="showEmojiBox">
-				<image class="emoji_item" v-for="index in 30" :src="'../../static/Emojis/'+index+'.png'" @click="sendEmoji(index)"></image>
-			</view>
-
-
-
 			<view style="position: fixed;left:0;right:0;bottom:0;background-color: #FFFFFF;" :style="{height:safeAreaBottom+'px'}"></view>
 			<input class="chatInput" :style="{bottom:safeAreaBottom+'px'}" type="text" placeholder="全员禁言中,你暂时无法发言" v-if="chatType=='text' && room.room_sendmsg==1"
 			 disabled="true" />
@@ -308,6 +302,10 @@
 					<text class="player_user">点歌人: {{urldecode(song.user.user_name)}}</text>
 				</view>
 				<image class="player_image" :src="song.song.pic"></image>
+			</view>
+
+			<view class="emoji" :style="{bottom:(safeAreaBottom+60)+'px'}" blurEffect="light" v-if="showEmojiBox">
+				<image class="emoji_item" v-for="index in 30" :src="'../../static/Emojis/'+index+'.png'" @click="sendEmoji(index)"></image>
 			</view>
 			<view v-if="showMenuBox" :style="{bottom:(safeAreaBottom+60)+'px'}" blurEffect="light" class="menuBox">
 				<scroll-view show-scrollbar="false" scroll-with-animation="true" scroll-x="true" class="menuBody">
@@ -410,12 +408,11 @@
 				}
 			});
 			uni.$on('WebSocketMessage', function(data) {
-				// try {
-				that.messageController(JSON.parse(data));
-				that.autoScroll();
-				// } catch (error) {
-				// console.error(error);
-				// }
+				try {
+					that.messageController(JSON.parse(data));
+				} catch (error) {
+					console.log(error);
+				}
 			});
 			uni.$on('IndexReload', function() {
 				that.app.user.getMyInfo({
@@ -619,10 +616,9 @@
 			},
 			autoScroll() {
 				let that = this;
-				this.viewId = "";
-				//设置viewIndex值，使聊天滚动到底部  
-				this.$nextTick(() => {
-					this.viewId = "im_" + this.historyList.length;
+				that.viewId = "";
+				that.$nextTick(function() {
+					that.viewId = "view_" + that.historyList[that.historyList.length - 1].view_id;
 				});
 			},
 			historyClicked() {
@@ -630,7 +626,6 @@
 				that.showMenuBox = false;
 				that.showEmojiBox = false;
 				uni.hideKeyboard();
-				that.autoScroll();
 			},
 			messageController(msg) {
 				let that = this;
@@ -708,18 +703,19 @@
 						that.musicNotLike = false;
 						that.playMusic(msg);
 						if (msg.user.user_id == that.userInfo.user_id) {
-							plus.push.createMessage("你点的《" + msg.song.name + "》(" + msg.song.singer + ")", '', {
-								title: "正在播放",
-							});
+							// plus.push.createMessage("你点的《" + msg.song.name + "》(" + msg.song.singer + ")", '', {
+							// 	title: "正在播放",
+							// });
 						} else if (msg.at.user_id == that.userInfo.user_id) {
-							plus.push.createMessage(decodeURIComponent(msg.user.user_name) + " 送给你的《" + msg.song.name + "》(" + msg.song.singer +
-								")", '', {
-									title: "正在播放",
-								});
+							// plus.push.createMessage(decodeURIComponent(msg.user.user_name) + " 送给你的《" + msg.song.name + "》(" + msg.song.singer +
+							// 	")", '', {
+							// 		title: "正在播放",
+							// 	});
 						}
 						break;
 					default:
 				}
+				that.autoScroll();
 			},
 			playMusic(msg) {
 				let that = this;
@@ -798,9 +794,12 @@
 				if (that.historyList.length > 100) {
 					that.historyList.shift();
 				}
+				msg.view_id = that.getRanId();
 				that.historyList.push(msg);
-
 				that.autoScroll();
+			},
+			getRanId() {
+				return new Date().valueOf() + parseInt(Math.random() * 100000);
 			},
 			urldecode(str) {
 				return decodeURIComponent(str);
@@ -842,6 +841,7 @@
 								}
 							}
 							_obj.time = res.data[i].message_createtime;
+							_obj.view_id = that.getRanId() + "_" + i;
 							that.historyList.unshift(_obj);
 						}
 						that.addSystemMessage(that.room.room_notice || "欢迎来到" + that.room.room_name);
@@ -922,6 +922,7 @@
 					type: "system",
 					content: msg,
 					bg: bg,
+					view_id: that.getRanId(),
 					color: color
 				});
 				that.autoScroll();
