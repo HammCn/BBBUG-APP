@@ -3,7 +3,7 @@
 		"path": "pages/index/index",
 		"style": {
 			"navigationBarTitleText": "房间",
-			// "navigationStyle": "custom",
+			"navigationStyle": "custom",
 			"navigationBarTextStyle": "black",
 			"app-plus": {
 				"softinputMode": "adjustPan",

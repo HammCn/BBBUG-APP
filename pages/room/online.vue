@@ -10,7 +10,7 @@
 			<view class="weui-panel__bd">
 				<view class="weui-media-box weui-media-box_appmsg" v-for="(item,index) in userList" @click="showMenu(item)">
 					<view class="weui-media-box__hd">
-						<img class="weui-media-box__thumb" style="border: 1px solid #eee;" :src="item.user_head||'/static/image/nohead.jpg'"
+						<img class="weui-media-box__thumb" style="border: 1px solid #eee;border-radius: 10px;" :src="item.user_head||'/static/image/nohead.jpg'"
 						 alt="">
 					</view>
 					<view class="weui-media-box__bd">

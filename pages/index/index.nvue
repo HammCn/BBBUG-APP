@@ -84,8 +84,8 @@
 		font-size: 14px;
 		color: #999;
 		margin-top: 3px;
-		margin-left: 5px;
-		margin-right: 5px;
+		margin-left: 10px;
+		margin-right: 10px;
 	}
 	.chat_item_text{
 		margin-top: 10px;
@@ -130,7 +130,7 @@
 	}
 	.player_user{
 		font-size: 12px;
-		color:#999;
+		color:#ccc;
 		margin-top: 5px;
 	}
 	.chatMenu{
@@ -214,7 +214,7 @@
 	<view class="uniapp">
 		<block v-if="showRoomPage">
 			<scroll-view @click="historyClicked" class="historyList" id="historyList" scroll-y="true" :scroll-with-animation="true"
-			 :scroll-into-view="viewId" :style="{bottom:safeAreaBottom+'px',paddingBottom:(safeAreaBottom+60)+'px'}">
+			 :scroll-into-view="viewId" :style="{paddingBottom:(safeAreaBottom+70)+'px'}">
 				<view id="historyBox">
 					<view v-for="(item,index) in historyList">
 						<view class="item" :id="'sha_'+item.sha" v-if="item.type=='text' && item.user.user_id!=userInfo.user_id">
@@ -235,7 +235,7 @@
 							</view>
 						</view>
 						<view class="item_mine" :id="'sha_'+item.sha" v-if="item.type=='text' && item.user.user_id==userInfo.user_id">
-							<view class="user_head_box">
+							<view class="user_head_box" @click="doUserHeadEvent(item)">
 								<text class="chat_item_user_name">{{item.user.user_name}}</text>
 								<image class="user_head_image" :src="item.user.user_head"></image>
 							</view>
@@ -254,7 +254,7 @@
 							</view>
 						</view>
 						<view class="item_mine" v-if="item.type=='img' && item.user.user_id==userInfo.user_id" :id="'sha_'+item.sha">
-							<view class="user_head_box">
+							<view class="user_head_box" @click="doUserHeadEvent(item)">
 								<text class="chat_item_user_name">{{item.user.user_name}}</text>
 								<image class="user_head_image" :src="item.user.user_head"></image>
 							</view>
@@ -285,6 +285,10 @@
 			<view class="emoji" :style="{bottom:(safeAreaBottom+60)+'px'}" blurEffect="light" v-if="showEmojiBox">
 				<image class="emoji_item" v-for="index in 30" :src="'../../static/Emojis/'+index+'.png'" @click="sendEmoji(index)"></image>
 			</view>
+
+
+
+			<view style="position: fixed;left:0;right:0;bottom:0;background-color: #FFFFFF;" :style="{height:safeAreaBottom+'px'}"></view>
 			<input class="chatInput" :style="{bottom:safeAreaBottom+'px'}" type="text" placeholder="全员禁言中,你暂时无法发言" v-if="chatType=='text' && room.room_sendmsg==1"
 			 disabled="true" />
 			<input disabled="disabled" :style="{bottom:safeAreaBottom+'px'}" v-if="chatType=='voice'" class="chatInput" type="text"
@@ -297,7 +301,8 @@
 			<image :style="{bottom:(safeAreaBottom+10)+'px'}" @click="doShowEmojiBox" class="chatMenu_emoji" src="/static/image/emoji.png"
 			 mode="widthFix"></image>
 
-			<view class="player" v-if="song.song" @click="doMusicClicked" blurEffect="dark">
+
+			<view class="player" v-if="song.song" @click="doMusicClicked" blurEffect="light">
 				<view class="player_info">
 					<text class="player_song">{{song.song.name}}</text>
 					<text class="player_user">点歌人: {{urldecode(song.user.user_name)}}</text>
@@ -405,12 +410,12 @@
 				}
 			});
 			uni.$on('WebSocketMessage', function(data) {
-				try {
-					that.messageController(JSON.parse(data));
-					that.autoScroll();
-				} catch (error) {
-					console.error(error);
-				}
+				// try {
+				that.messageController(JSON.parse(data));
+				that.autoScroll();
+				// } catch (error) {
+				// console.error(error);
+				// }
 			});
 			uni.$on('IndexReload', function() {
 				that.app.user.getMyInfo({
@@ -448,6 +453,7 @@
 		},
 		onShow() {
 			let that = this;
+			plus.push.clear();
 			if (that.bgAudioMannager.src) {
 				if (!that.musicNotLike) {
 					that.bgAudioMannager.play();
@@ -613,7 +619,7 @@
 			},
 			autoScroll() {
 				let that = this;
-				this.viewIndex = "";
+				this.viewId = "";
 				//设置viewIndex值，使聊天滚动到底部  
 				this.$nextTick(() => {
 					this.viewId = "im_" + this.historyList.length;
@@ -633,6 +639,11 @@
 					case 'img':
 					case 'system':
 						if (msg.type == 'text' && msg.at) {
+							if (msg.at.user_id == that.userInfo.user_id) {
+								plus.push.createMessage("@" + decodeURIComponent(msg.at.user_name) + " " + decodeURIComponent(msg.content), '', {
+									title: decodeURIComponent(msg.user.user_name),
+								});
+							}
 							msg.content = "@" + decodeURIComponent(msg.at.user_name) + " " + msg.content;
 						}
 						that.addMessageToList(msg);
@@ -641,6 +652,11 @@
 						if (msg.at) {
 							that.addSystemMessage(decodeURIComponent(msg.user.user_name) + " 送了一首 《" + msg.song.name + "》 给 " +
 								decodeURIComponent(msg.at.user_name), '#333');
+							if (msg.at.user_id == that.userInfo.user_id) {
+								plus.push.createMessage("送你一首《" + msg.song.name + "》(" + msg.song.singer + ")", '', {
+									title: decodeURIComponent(msg.user.user_name),
+								});
+							}
 						} else {
 							that.addSystemMessage(decodeURIComponent(msg.user.user_name) + " 点了一首《" + msg.song.name + "》", '#333');
 						}
@@ -651,7 +667,8 @@
 
 						break;
 					case 'chat_bg':
-						that.addSystemMessage(decodeURIComponent(msg.user.user_name) + " 运气大爆发,触发了点歌背景墙特效(1小时内播放歌曲时有效)!", 'green', '#eee');
+						that.addSystemMessage(decodeURIComponent(msg.user.user_name) + " 运气大爆发,触发了点歌背景墙特效(1小时内播放歌曲时有效)!", 'green',
+							'#eee');
 
 						break;
 					case 'push':
@@ -679,7 +696,7 @@
 						break;
 					case 'back':
 						for (let i = 0; i < that.historyList.length; i++) {
-							if (that.historyList[i].key == msg.key) {
+							if (that.historyList[i].message_id == msg.message_id) {
 								that.historyList.splice(i, 1);
 								break;
 							}
@@ -690,6 +707,16 @@
 					case 'playSong':
 						that.musicNotLike = false;
 						that.playMusic(msg);
+						if (msg.user.user_id == that.userInfo.user_id) {
+							plus.push.createMessage("你点的《" + msg.song.name + "》(" + msg.song.singer + ")", '', {
+								title: "正在播放",
+							});
+						} else if (msg.at.user_id == that.userInfo.user_id) {
+							plus.push.createMessage(decodeURIComponent(msg.user.user_name) + " 送给你的《" + msg.song.name + "》(" + msg.song.singer +
+								")", '', {
+									title: "正在播放",
+								});
+						}
 						break;
 					default:
 				}
@@ -933,14 +960,16 @@
 				let user = msg.user;
 				let that = this;
 				let menu = ['进入主页', '@一下Ta', '送歌给Ta'];
-				if (that.userInfo.user_admin || that.room.room_user == that.userInfo.user_id) {
+				if ((that.userInfo.user_admin || that.room.room_user == that.userInfo.user_id)) {
 					menu = ['进入主页', '@一下Ta', '送歌给Ta', '撤回消息', '禁止点歌', '禁止发言', '全部解禁'];
 				} else if (user.user_id == that.userInfo.user_id) {
 					//发消息人是自己
 					menu = ['进入主页', '@一下Ta', '送歌给Ta', '撤回消息'];
 				} else {
 					//其他人的消息
+					menu = ['进入主页', '@一下Ta', '送歌给Ta'];
 				}
+
 				uni.showActionSheet({
 					itemList: menu,
 					success: function(res) {
@@ -969,6 +998,17 @@
 											success: function() {}
 										});
 									}
+								});
+								break;
+							case '撤回消息':
+								console.log(msg);
+								that.app.request({
+									url: "message/back",
+									data: {
+										message_id: msg.message_id,
+										room_id: that.room_id
+									},
+									success() {}
 								});
 								break;
 							case '禁止发言':

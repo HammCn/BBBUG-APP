@@ -80,13 +80,9 @@
 									},
 									loading: "置顶中",
 									success: function(res) {
-										uni.showModal({
-											title: '置顶成功',
-											content: res.msg,
-											showCancel: false,
-											success: function() {
-												that.getSongList();
-											}
+										that.getSongList();
+										uni.showToast({
+											title: res.msg
 										});
 									}
 								});
@@ -100,13 +96,9 @@
 									},
 									loading: "移除中",
 									success: function(res) {
-										uni.showModal({
-											title: '移除成功',
-											content: res.msg,
-											showCancel: false,
-											success: function() {
-												that.getSongList();
-											}
+										that.getSongList();
+										uni.showToast({
+											title: res.msg
 										});
 									}
 								});
@@ -124,6 +116,7 @@
 	@import "/static/style/weui.scss";
 	@import "/static/style/main.scss";
 	@import '/static/style/font/iconfont.scss';
+
 	.songList {
 		padding-bottom: constant(safe-area-inset-bottom);
 		padding-bottom: env(safe-area-inset-bottom);
@@ -153,7 +146,8 @@
 		color: #999;
 		text-align: center;
 	}
-	.song_image{
+
+	.song_image {
 		border-radius: 10px;
 	}
 </style>
