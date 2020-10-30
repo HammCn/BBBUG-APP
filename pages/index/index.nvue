@@ -446,6 +446,10 @@
 					song: null,
 					user: null
 				};
+				//播放完毕后读取最新播放中的歌曲
+				that.app.webSocket.connection.send({
+					data: "getNowSong"
+				});
 			});
 		},
 		onShow() {

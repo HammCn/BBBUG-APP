@@ -81,9 +81,17 @@
 									loading: "置顶中",
 									success: function(res) {
 										that.getSongList();
-										uni.showToast({
-											title: res.msg
-										});
+										if (res.msg == '顶歌成功') {
+											uni.showToast({
+												title: res.msg
+											});
+										} else {
+											uni.showModal({
+												title: "置顶成功",
+												content: res.msg,
+												showCancel: false
+											});
+										}
 									}
 								});
 								break;
