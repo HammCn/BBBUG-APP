@@ -2,8 +2,8 @@
 <h1>BBBUG聊天室APP客户端</h1>
 </p>
 <p align="left">
-<a href="https://gitee.com/bbbug_com/ChatWEB/stargazers" target="_blank"><img src="https://svg.hamm.cn/gitee.svg?type=star&user=bbbug_com&project=ChatWEB"/></a>
-<a href="https://gitee.com/bbbug_com/ChatWEB/members" target="_blank"><img src="https://svg.hamm.cn/gitee.svg?type=fork&user=bbbug_com&project=ChatWEB"/></a>
+<a href="https://gitee.com/bbbug_com/ChatAPP/stargazers" target="_blank"><img src="https://svg.hamm.cn/gitee.svg?type=star&user=bbbug_com&project=ChatAPP"/></a>
+<a href="https://gitee.com/bbbug_com/ChatAPP/members" target="_blank"><img src="https://svg.hamm.cn/gitee.svg?type=fork&user=bbbug_com&project=ChatAPP"/></a>
 <img src="https://svg.hamm.cn/badge.svg?key=Base&value=UniAPP"/>
 <img src="https://svg.hamm.cn/badge.svg?key=License&value=GPL-3.0"/>
 </p>
