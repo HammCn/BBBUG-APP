@@ -54,5 +54,6 @@ uniapp,vue等。
 <img src="https://images.gitee.com/uploads/images/2020/1101/113238_13bb6803_145025.png" width="15%"/>
 <img src="https://images.gitee.com/uploads/images/2020/1101/113537_abb7e6d1_145025.png" width="15%"/>
 <img src="https://images.gitee.com/uploads/images/2020/1101/113409_5412d00a_145025.png" width="15%"/>
-<img src="https://images.gitee.com/uploads/images/2020/1101/113550_cabd8643_145025.png" width="15%"/>
+<img src="https://images.gitee.com/uploads/images/2020/1101/113732_d6654f56_145025.png" width="15%"/>
+<img src="https://images.gitee.com/uploads/images/2020/1101/113753_81570cfa_145025.png" width="15%"/>
 </p>
