@@ -50,9 +50,9 @@ uniapp,vue等。
 
 ### 晒个截图
 <p align="center">
-<img src="https://images.gitee.com/uploads/images/2020/1101/113232_d1683456_145025.png" width="20%"/>
-<img src="https://images.gitee.com/uploads/images/2020/1101/113238_13bb6803_145025.png" width="20%"/>
-<img src="https://images.gitee.com/uploads/images/2020/1101/113537_abb7e6d1_145025.png" width="20%"/>
-<img src="https://images.gitee.com/uploads/images/2020/1101/113409_5412d00a_145025.png" width="20%"/>
-<img src="https://images.gitee.com/uploads/images/2020/1101/113550_cabd8643_145025.png" width="20%"/>
+<img src="https://images.gitee.com/uploads/images/2020/1101/113232_d1683456_145025.png" width="15%"/>
+<img src="https://images.gitee.com/uploads/images/2020/1101/113238_13bb6803_145025.png" width="15%"/>
+<img src="https://images.gitee.com/uploads/images/2020/1101/113537_abb7e6d1_145025.png" width="15%"/>
+<img src="https://images.gitee.com/uploads/images/2020/1101/113409_5412d00a_145025.png" width="15%"/>
+<img src="https://images.gitee.com/uploads/images/2020/1101/113550_cabd8643_145025.png" width="15%"/>
 </p>
