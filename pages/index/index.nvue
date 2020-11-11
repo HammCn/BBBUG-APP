@@ -25,6 +25,10 @@
 		bottom: 0;
 		top: 0;
 		background-color: #F5F5F5;
+		transform: rotate(180deg);
+	}
+	.message_item{
+		transform: rotate(180deg);
 	}
 	.item_system{
 		text-align: center;
@@ -213,9 +217,9 @@
 <template>
 	<view class="uniapp">
 		<block v-if="showRoomPage">
-			<scroll-view @click="historyClicked" class="historyList" id="historyList" scroll-y="true" :scroll-with-animation="true"
-			 :scroll-into-view="viewId" :style="{paddingBottom:(safeAreaBottom+70)+'px'}" height="400">
-				<view id="historyBox">
+			<view @click="historyClicked" class="historyList" id="historyList" scroll-y="true" ascroll-with-animation="true"
+			 :scroll-into-view="viewId" :style="{bottom:(safeAreaBottom+70)+'px'}">
+				<view class="message_item" id="historyBox">
 					<view v-for="(item,index) in historyList">
 						<view class="item" :id="'sha_'+item.sha" v-if="item.type=='text' && item.user.user_id!=userInfo.user_id">
 							<view class="user_head_box" @click="doUserHeadEvent(item)">
@@ -241,6 +245,7 @@
 							</view>
 							<view class="chat_item_body_right">
 								<view v-if="!item.at" class="chat_item_text_box">
+									<text class="chat_item_text" v-if="item.user.user_id!=userInfo.user_id" style="background-color: #fff;color:black;">{{urldecode(item.content)}}</text>
 									<text class="chat_item_text" v-if="item.user.user_id==userInfo.user_id && userInfo.user_sex==1" style="background-color: #66CBFF;color:black;">{{urldecode(item.content)}}</text>
 									<text class="chat_item_text" v-if="item.user.user_id==userInfo.user_id && userInfo.user_sex!=1" style="background-color: #FE9898;color:white;">{{urldecode(item.content)}}</text>
 								</view>
@@ -280,8 +285,7 @@
 						</view>
 					</view>
 				</view>
-				<view :id="'view_'+(historyList[historyList.length-1].view_id)"></view>
-			</scroll-view>
+			</view>
 			<view style="position: fixed;left:0;right:0;bottom:0;background-color: #FFFFFF;" :style="{height:safeAreaBottom+'px'}"></view>
 			<input class="chatInput" :style="{bottom:safeAreaBottom+'px'}" type="text" placeholder="全员禁言中,你暂时无法发言" v-if="chatType=='text' && room.room_sendmsg==1"
 			 disabled="true" />
@@ -387,6 +391,7 @@
 				password: "",
 				chatType: 'text',
 				historyList: [],
+				historyMax: 50,
 				messageObj: {
 					message: "",
 					at: false,
@@ -414,6 +419,7 @@
 					console.log(error);
 				}
 			});
+
 			uni.$on('IndexReload', function() {
 				that.app.user.getMyInfo({
 					success(userInfo) {
@@ -446,10 +452,6 @@
 					song: null,
 					user: null
 				};
-				//播放完毕后读取最新播放中的歌曲
-				that.app.webSocket.connection.send({
-					data: "getNowSong"
-				});
 			});
 		},
 		onShow() {
@@ -620,10 +622,14 @@
 			},
 			autoScroll() {
 				let that = this;
-				that.viewId = "";
-				that.$nextTick(function() {
-					that.viewId = "view_" + that.historyList[that.historyList.length - 1].view_id;
-				});
+				// // that.viewId = "";
+				// that.$nextTick(function() {
+				// 	uni.pageScrollTo({
+				// 		duration: 0, //默认不需要过渡动画(手机运行必须?)
+				// 		scrollTop: 9999999999,
+				// 	});
+				// 	// that.viewId = "view_" + that.historyList[that.historyList.length - 1].view_id;
+				// });
 			},
 			historyClicked() {
 				let that = this;
@@ -795,7 +801,7 @@
 			},
 			addMessageToList(msg) {
 				let that = this;
-				if (that.historyList.length > 100) {
+				if (that.historyList.length > that.historyMax) {
 					that.historyList.shift();
 				}
 				msg.view_id = that.getRanId();
@@ -827,7 +833,7 @@
 					url: 'message/getMessageList',
 					data: {
 						room_id: that.room_id,
-						per_page: 100,
+						per_page: that.historyMax,
 					},
 					success: function(res) {
 						that.historyList = [];

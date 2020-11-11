@@ -287,6 +287,7 @@ app.webSocket = {
 
 
 				that.connection.onError(function(res) {
+					console.log(res);
 					that.isConnected = false;
 					clearTimeout(that.heartBeatTimer);
 					that.connection = null;
