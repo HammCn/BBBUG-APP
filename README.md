@@ -1,7 +1,10 @@
-<p align="left">
-<h1>BBBUG聊天室APP客户端</h1>
+
+<h1 align="center">BBBUG聊天室 APP客户端</h1>
+
+<p align="center">
+<a href="https://github.com/HammCn/BBBUG-APP" target="_blank">Github</a> | <a href="https://gitee.com/bbbug_com/ChatAPP" target="_blank">Gitee</a>
 </p>
-<p align="left">
+<p align="center">
 <a href="https://gitee.com/bbbug_com/ChatAPP/stargazers" target="_blank"><img src="https://svg.hamm.cn/gitee.svg?type=star&user=bbbug_com&project=ChatAPP"/></a>
 <a href="https://gitee.com/bbbug_com/ChatAPP/members" target="_blank"><img src="https://svg.hamm.cn/gitee.svg?type=fork&user=bbbug_com&project=ChatAPP"/></a>
 <img src="https://svg.hamm.cn/badge.svg?key=Base&value=UniAPP"/>
